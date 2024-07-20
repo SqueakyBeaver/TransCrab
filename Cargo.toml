@@ -1,0 +1,17 @@
+[package]
+name = "rust-shit"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+dotenv = "0.15.0"
+poise = "0.6.1"
+serenity = "0.12.2"
+symphonia = { version = "0.5.4", features = ["mp3", "isomp4" ] }
+tokio = { version = "1.38.1", features = ["macros", "rt-multi-thread"] }
+vosk = "0.2.0"
+
+[[bin]]
+name = "rust-shit"
+path = "src/main.rs"
