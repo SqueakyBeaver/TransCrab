@@ -11,12 +11,14 @@ pub fn transcribe(path: &String) -> Result<String, Error> {
     let binding = fs::canonicalize("temp-files/").unwrap();
     let output_path = binding.to_str().unwrap().to_owned() + "/temp.wav";
 
-    Command::new("ffmpeg")
+    let output = Command::new("ffmpeg")
         .args(["-y", "-i", path, &output_path])
-        .spawn()
-        .expect("Failed to run the ffmpeg command whoops")
-        .wait()
-        .expect("Failed to run the ffmpeg command whoops"); // It yelled at me about an unused result, so I got pissy
+        .output()
+        .expect("Failed to run the ffmpeg command whoops");
+
+    if !output.status.success() {
+        println!("Err: {:?}\nStdout: {:?}", output.stderr, output.stdout)
+    }
 
     let mut reader =
         WavReader::open(&output_path).expect("Could not create the WAV reader");

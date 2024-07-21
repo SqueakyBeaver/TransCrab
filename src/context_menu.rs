@@ -42,14 +42,32 @@ pub async fn transcribe(
             },
         )
         .await?;
-    
-    reply.edit(
+
+    // TODO: Make this ping me (when more config)
+
+    let transcription = stt::transcribe(&fname);
+
+    if transcription.is_err() {
+        reply.edit(
+            ctx,
+            poise::CreateReply {
+                content: Some(String::from(
+                    "Error transcribing Audio. Please tell the devs.",
+                )),
+                ..Default::default()
+            },
+        ).await?;
+        return Err(transcription.err().unwrap());
+    }
+
+    reply
+        .edit(
             ctx,
             poise::CreateReply {
                 content: Some(format!(
                     "Transcript for {}:\n>>> {}",
                     msg.link(),
-                    stt::transcribe(&fname).unwrap()
+                    transcription.unwrap()
                 )),
                 ..Default::default()
             },
