@@ -21,7 +21,7 @@ async fn main() {
             ],
             on_error: |error| {
                 Box::pin(async move {
-                    println!("what the hell");
+                    println!("OH SHIT");
                     match error {
                         poise::FrameworkError::ArgumentParse { error, .. } => {
                             if let Some(error) = error.downcast_ref::<serenity::RoleParseError>() {

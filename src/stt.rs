@@ -1,17 +1,18 @@
+use crate::Error;
 use hound::WavReader;
 use std::fs;
 use std::process::Command;
 use vosk::{Model, Recognizer};
 
-pub fn transcribe(path: &std::path::Path) -> String {
+pub fn transcribe(path: &String) -> Result<String, Error> {
     let model_path = "model";
     // Best way I could think of to get good path and also have the "temp.wav" at the end
     // bc canonicalize errors if the file doesn't exist ;-;
     let binding = fs::canonicalize("temp-files/").unwrap();
-    let output_path = binding.to_str().unwrap().to_owned() + "temp.wav";
+    let output_path = binding.to_str().unwrap().to_owned() + "/temp.wav";
 
     Command::new("ffmpeg")
-        .args(["-y", "-i", path.to_str().unwrap(), &output_path])
+        .args(["-y", "-i", path, &output_path])
         .spawn()
         .expect("Failed to run the ffmpeg command whoops")
         .wait()
@@ -37,5 +38,5 @@ pub fn transcribe(path: &std::path::Path) -> String {
         recognizer.accept_waveform(sample);
     }
 
-    recognizer.final_result().single().unwrap().text.to_string()
+    Ok(recognizer.final_result().single().unwrap().text.to_string())
 }
