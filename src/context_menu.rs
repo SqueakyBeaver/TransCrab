@@ -8,8 +8,10 @@ pub async fn transcribe(
     ctx: Context<'_>,
     #[description = "Voice Message to transcribe"] msg: serenity::Message,
 ) -> Result<(), Error> {
+    ctx.defer().await?;
+
     if msg.attachments.is_empty() {
-        ctx.say("No message attachments found. :p").await?;
+        ctx.reply("No message attachments found. :p").await?;
         return Ok(());
     }
 
@@ -18,7 +20,7 @@ pub async fn transcribe(
     // I am smort
     let path = Path::new("./voice-message.ogg");
 
-    ctx.say(stt::transcribe(path)).await?;
+    ctx.reply(stt::transcribe(path)).await?;
 
     Ok(())
 }

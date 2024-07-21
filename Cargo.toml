@@ -6,9 +6,8 @@ build = "build.rs"
 
 [dependencies]
 dotenv = "0.15.0"
+hound = "3.5.1"
 poise = "0.6.1"
-serenity = "0.12.2"
-symphonia = { version = "0.5.4", features = ["mp3", "isomp4" ] }
 tokio = { version = "1.38.1", features = ["macros", "rt-multi-thread"] }
 vosk = "0.2.0"
 
