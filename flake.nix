@@ -44,6 +44,7 @@
             cargo-deny
             cargo-edit
             cargo-watch
+            clippy
             rust-analyzer
             ffmpeg-full # Dunno if full is needed, but I'm not taking chances
           ];
