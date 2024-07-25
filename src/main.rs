@@ -1,4 +1,3 @@
-mod context_menu;
 mod stt;
 
 use dotenv;
@@ -17,7 +16,7 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![
-                context_menu::transcribe()
+                stt::exec()
             ],
             on_error: |error| {
                 Box::pin(async move {
