@@ -158,7 +158,7 @@ pub async fn exec(
                     ctx,
                     poise::CreateReply {
                         content: Some(format!(
-                            "Transcript for {}:\n>>> {}",
+                            "Transcript for {}:\n>>> {}\n-# Note: There may be errors. I am sorry.",
                             msg.link(),
                             transcript
                         )),
