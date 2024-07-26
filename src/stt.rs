@@ -70,8 +70,8 @@ fn transcribe(path: &String) -> Result<String, Error> {
         Ok(path) => {
             // The compiler told me to do it this way
             // I don't want to, but I will
-            let binding = fs::canonicalize("model").unwrap();
-            let model_path = binding.to_str().unwrap();
+            let binding = fs::canonicalize("model").expect("Model path doesn't exist");
+            let model_path = binding.to_str().expect("Model not found");
 
             let mut reader = WavReader::open(&path).expect("Could not create the WAV reader");
 
@@ -84,21 +84,17 @@ fn transcribe(path: &String) -> Result<String, Error> {
             let mut recognizer = Recognizer::new(&model, reader.spec().sample_rate as f32)
                 .expect("Could not create the recognizer");
 
-            recognizer.set_max_alternatives(0);
-            recognizer.set_words(false);
-            recognizer.set_partial_words(false);
-
             for sample in samples.chunks(100) {
                 recognizer.accept_waveform(sample);
             }
 
-            let res = recognizer.final_result().single().unwrap().text;
-            Ok(String::from(res))
+            let res = String::from(recognizer.final_result().single().unwrap().text);
+            Ok(res)
         }
     }
 }
 
-#[poise::command(context_menu_command = "Transcribe audio in message", slash_command)]
+#[poise::command(context_menu_command = "Transcribe audio in message")]
 pub async fn exec(
     ctx: Context<'_>,
     #[description = "Voice Message to transcribe"] msg: serenity::Message,

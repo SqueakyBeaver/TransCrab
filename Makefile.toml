@@ -1,8 +1,6 @@
 [env]
 TARGET_DIR = "target/debug"
 
-[env.release]
-TARGET_DIR = "target/release"
 
 [tasks.format]
 install_crate = "rustfmt"
@@ -24,21 +22,29 @@ for path in ${libs}
 end
 '''
 
-[tasks.build]
+
+[tasks.build-dev]
+dependencies = ["format"]
 command = "cargo"
 args = ["build"]
 
-[tasks.start]
-dependencies = ["format", "build", "move-libs"]
+[tasks.start-dev]
+dependencies = ["format", "move-libs"]
 command = "cargo"
 args = ["run"]
 
-[tasks.build-clean]
-command = "cargo"
-args = ["build"]
-dependencies = ["clean"]
 
-[tasks.start-clean]
-dependencies = ["format", "build", "move-libs"]
+# Since environment variables in tasks are set after dependencies run
+[tasks.env-prod]
+env = { TARGET_DIR = "target/release" }
+
+[tasks.build-prod]
+dependencies = ["env-prod"]
 command = "cargo"
-args = ["run"]
+args = ["build", "-r"]
+
+[tasks.start-prod]
+dependencies = ["env-prod", "move-libs"]
+command = "cargo"
+args = ["run", "-r"]
+env = { TARGET_DIR = "target/release" }
