@@ -3,7 +3,6 @@ mod stt;
 use dotenv;
 use poise::serenity_prelude as serenity;
 
-
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
@@ -15,9 +14,7 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![
-                stt::exec()
-            ],
+            commands: vec![stt::exec()],
             on_error: |error| {
                 Box::pin(async move {
                     println!("OH SHIT");

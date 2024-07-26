@@ -1,4 +1,6 @@
+use std::fs;
 
 fn main() {
-    println!("cargo:rustc-link-search=libs/vosk")
+    let path = fs::canonicalize("libs/vosk").unwrap();
+    println!("cargo:rustc-link-search={}", path.to_str().unwrap())
 }

@@ -43,6 +43,7 @@
             pkg-config
             cargo-deny
             cargo-edit
+            cargo-make
             cargo-watch
             clippy
             rust-analyzer

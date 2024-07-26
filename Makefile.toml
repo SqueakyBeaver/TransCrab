@@ -1,0 +1,44 @@
+[env]
+TARGET_DIR = "target/debug"
+
+[env.release]
+TARGET_DIR = "target/release"
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+
+[tasks.move-libs]
+script_runner = "@duckscript"
+script = '''
+libs = glob_array ./libs/vosk/*.*
+for path in ${libs}
+    fname = basename ${path}
+    echo ${fname}
+    cp ./${path} ./${TARGET_DIR}/${fname}
+end
+'''
+
+[tasks.build]
+command = "cargo"
+args = ["build"]
+
+[tasks.start]
+dependencies = ["format", "build", "move-libs"]
+command = "cargo"
+args = ["run"]
+
+[tasks.build-clean]
+command = "cargo"
+args = ["build"]
+dependencies = ["clean"]
+
+[tasks.start-clean]
+dependencies = ["format", "build", "move-libs"]
+command = "cargo"
+args = ["run"]

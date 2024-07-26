@@ -21,7 +21,7 @@ async fn download_file(url: &str) -> Result<String, Error> {
                     if name.is_empty() {
                         None
                     } else {
-                        Some(String::from("tmp") + name.split_terminator(".").last().unwrap())
+                        Some(String::from("tmp.") + name.split_terminator(".").last().unwrap())
                     }
                 })
                 .unwrap_or(String::from("tmp.bin"));
@@ -92,7 +92,8 @@ fn transcribe(path: &String) -> Result<String, Error> {
                 recognizer.accept_waveform(sample);
             }
 
-            Ok(recognizer.final_result().single().unwrap().text.to_string())
+            let res = recognizer.final_result().single().unwrap().text;
+            Ok(String::from(res))
         }
     }
 }
