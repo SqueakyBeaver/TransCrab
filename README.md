@@ -1,21 +1,17 @@
 # TransCrab
 Discord transcription bot written in Rust, using Serenity and Poise
-Transcription using Vosk
+Transcription using Whisper-rs
 
-# Running
-note: you will have issues on macOS because I couldn't easily find a vosk model for macOS
-
-Download a Vosk model from [here](https://alphacephei.com/vosk/models) and extract the contents into the root folder. Name the resulting folder `model`
+# Running dev build
+Download a Whisper.cpp model from [here](https://huggingface.co/ggerganov/whisper.cpp/tree/main) to the root directory and name the file `model.bin`. I suggest one of the `tiny.en` models, since they use very little memory.
 Add your discord token to `.env`
-run `cargo make start-dev`
+run `cargo make start-dev` or `cargo run`
 
 ## Running production build
-Download a Vosk model from [here](https://alphacephei.com/vosk/models) and extract the contents into the root folder. Name the resulting folder `model`
-Add your discord token to `.env`
-run `cargo make start-prod`
+same process as a dev build, except run `cargo make start-prod` or `cargo run -r`
 
 # Building
 It should work on multiple platforms
-It should work on NixOS (and probably anything using nix) using `nix-direnv`. You're welcome.
+It will work on NixOS (and probably anything using nix) using `nix-direnv`. You're welcome.
 
 Need assistance? Open an issue and I might be able to help

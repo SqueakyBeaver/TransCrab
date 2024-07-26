@@ -1,4 +1,5 @@
 mod stt;
+// mod whisper_testing;
 
 use dotenv;
 use poise::serenity_prelude as serenity;

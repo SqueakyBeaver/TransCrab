@@ -11,25 +11,13 @@ args = ["fmt", "--", "--emit=files"]
 command = "cargo"
 args = ["clean"]
 
-[tasks.move-libs]
-script_runner = "@duckscript"
-script = '''
-libs = glob_array ./libs/vosk/*.*
-for path in ${libs}
-    fname = basename ${path}
-    echo ${fname}
-    cp ./${path} ./${TARGET_DIR}/${fname}
-end
-'''
-
-
 [tasks.build-dev]
 dependencies = ["format"]
 command = "cargo"
 args = ["build"]
 
 [tasks.start-dev]
-dependencies = ["format", "move-libs"]
+dependencies = ["format"]
 command = "cargo"
 args = ["run"]
 
@@ -44,7 +32,7 @@ command = "cargo"
 args = ["build", "-r"]
 
 [tasks.start-prod]
-dependencies = ["env-prod", "move-libs"]
+dependencies = ["env-prod"]
 command = "cargo"
 args = ["run", "-r"]
 env = { TARGET_DIR = "target/release" }

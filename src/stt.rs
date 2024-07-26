@@ -5,7 +5,8 @@ use std::fs;
 use std::fs::File;
 use std::io::{copy, Cursor};
 use std::process::Command;
-use vosk::{Model, Recognizer};
+// use vosk::{Model, Recognizer};
+use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
 
 async fn download_file(url: &str) -> Result<String, Error> {
     let response = reqwest::get(url).await?;
@@ -44,8 +45,20 @@ fn convert(path: &String) -> Result<String, Error> {
     let binding = fs::canonicalize("temp-files/").unwrap();
     let output_path = binding.to_str().unwrap().to_owned() + "/temp.wav";
 
+    // FUTURE: ffmpeg -y -i input -ar 16000 -ac 1 -c:a pcm_s16le tmp.wav
     let output = Command::new("ffmpeg")
-        .args(["-y", "-i", path, &output_path])
+        .args([
+            "-y",
+            "-i",
+            path,
+            "-ar",
+            "16000",
+            "-ac",
+            "1",
+            "-c:a",
+            "pcm_s16le",
+            &output_path,
+        ])
         .output()
         .expect("ffmpeg error");
 
@@ -70,25 +83,47 @@ fn transcribe(path: &String) -> Result<String, Error> {
         Ok(path) => {
             // The compiler told me to do it this way
             // I don't want to, but I will
-            let binding = fs::canonicalize("model").expect("Model path doesn't exist");
+            let binding = fs::canonicalize("model.bin").expect("Model path doesn't exist");
             let model_path = binding.to_str().expect("Model not found");
 
             let mut reader = WavReader::open(&path).expect("Could not create the WAV reader");
 
-            let samples = reader
+            let original_samples = reader
                 .samples()
                 .collect::<hound::Result<Vec<i16>>>()
                 .expect("Could not read WAV file");
 
-            let model = Model::new(model_path).expect("Could not create the model");
-            let mut recognizer = Recognizer::new(&model, reader.spec().sample_rate as f32)
-                .expect("Could not create the recognizer");
+            let mut samples = vec![0.0f32; original_samples.len()];
+            whisper_rs::convert_integer_to_float_audio(&original_samples, &mut samples)
+                .expect("failed to convert samples");
 
-            for sample in samples.chunks(100) {
-                recognizer.accept_waveform(sample);
+            let ctx =
+                WhisperContext::new_with_params(&model_path, WhisperContextParameters::default())
+                    .expect("failed to open model");
+
+            let mut state = ctx.create_state().expect("failed to create key");
+            let mut params = FullParams::new(SamplingStrategy::default());
+
+            params.set_initial_prompt("Friends having a conversation");
+            params.set_progress_callback_safe(|progress| {
+                println!("Progress callback: {}%", progress)
+            });
+
+            state
+                .full(params, &samples)
+                .expect("failed to convert samples");
+
+            let mut res = String::from("");
+
+            let num_segments = state
+                .full_n_segments()
+                .expect("failed to get number of segments");
+            for i in 0..num_segments {
+                let segment = state
+                    .full_get_segment_text(i)
+                    .expect("failed to get segment");
+                res += segment.as_str();
             }
-
-            let res = String::from(recognizer.final_result().single().unwrap().text);
             Ok(res)
         }
     }
