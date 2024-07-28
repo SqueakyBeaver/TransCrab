@@ -104,7 +104,10 @@ fn transcribe(path: &String) -> Result<String, Error> {
             let mut state = ctx.create_state().expect("failed to create key");
             let mut params = FullParams::new(SamplingStrategy::default());
 
-            params.set_initial_prompt("Friends having a conversation");
+            params.set_initial_prompt(
+                "Make sure to add proper punctuation while being as accurate as possible. Use oxford commas\n
+                People: Cleo, Heckate",
+            );
             params.set_progress_callback_safe(|progress| {
                 println!("Progress callback: {}%", progress)
             });
@@ -129,7 +132,11 @@ fn transcribe(path: &String) -> Result<String, Error> {
     }
 }
 
-#[poise::command(context_menu_command = "Transcribe audio in message")]
+#[poise::command(
+    context_menu_command = "Transcribe audio in message",
+    slash_command,
+    rename = "transcribe"
+)]
 pub async fn exec(
     ctx: Context<'_>,
     #[description = "Voice Message to transcribe"] msg: serenity::Message,

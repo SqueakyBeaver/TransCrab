@@ -3,7 +3,7 @@ Discord transcription bot written in Rust, using Serenity and Poise
 Transcription using Whisper-rs
 
 # Running dev build
-Download a Whisper.cpp model from [here](https://huggingface.co/ggerganov/whisper.cpp/tree/main) to the root directory and name the file `model.bin`. I suggest one of the `tiny.en` models, since they use very little memory.
+Download a Whisper.cpp model from [here](https://huggingface.co/ggerganov/whisper.cpp/tree/main) to the root directory and name the file `model.bin`. I suggest one of the `tiny.en` or `base.en` models, since they use little memory.
 Add your discord token to `.env`
 run `cargo make start-dev` or `cargo run`
 

@@ -12,6 +12,7 @@ pub struct Data {}
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
+    env_logger::init();
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
@@ -27,15 +28,20 @@ async fn main() {
                                 println!("Not a RoleParseError :(");
                             }
                         }
-                        other => poise::builtins::on_error(other).await.unwrap(),
+                        other =>{
+                        if let Err(e) = poise::builtins::on_error(other).await {
+                            tracing::error!("Fatal error while sending error message: {}", e);
+                        }
+                    },
                     }
                 })
             },
             ..Default::default()
         })
-        .setup(move |ctx, _ready, framework| {
+        .setup(move |ctx, ready, framework| {
             Box::pin(async move {
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                println!("Logged in as {}#{}", ready.user.name, ready.user.discriminator.unwrap());
                 Ok(Data {})
             })
         })
